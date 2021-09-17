@@ -1,10 +1,12 @@
 # N2pcBiophysicalModeling
  Biophysical Modeling of the Columnar/Laminar Origin of the N2pc.
 
-This code was used to produce the figures in Herrera and Westerberg et al. 2021.
+Main analysis code for figures in Herrera and Westerberg et al. 2021.
 
 # Plataform
 MatLab (created in MatLab 2018b)
+
+# Description
 
 # License
 Copyright (C) 2021 Beatriz Herrera, Jacob A. Westerberg, Michelle S. Schall, Alexander Maier, Geoffrey F. Woodman, Jorge J. Riera, and Jeffrey D. Schall.
@@ -14,8 +16,6 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
-
-## Description
 
 ## Citation
 

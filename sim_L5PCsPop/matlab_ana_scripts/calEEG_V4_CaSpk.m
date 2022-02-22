@@ -16,8 +16,7 @@ path2CellsData_1 = []; % path to supra-thershold
 path2CellsData_2 = []; % path to threshold
 % stim sim data (too large to include on GitHub repo)
 
-path2leadField_V4 = fullfile('..', 'sim_V4data', 'lead_fields', ...
-    'leadfields_NMTv2_atlas'); % path to
+path2leadField_V4 = 'leadfields_NMTv2_atlas'; % path to
 % dipolar lead field matrix
 
 %% load LFP data

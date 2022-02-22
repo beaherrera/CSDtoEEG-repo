@@ -1,0 +1,94 @@
+// Author: Etay Hay, 2011
+//    Models of Neocortical Layer 5b Pyramidal Cells Capturing a Wide Range of
+//    Dendritic and Perisomatic Active Properties
+//    (Hay et al., PLoS Computational Biology, 2011)
+//
+// Model of L5 Pyramidal Cell, constrained both for BAC firing and Current Step Firing
+
+
+// Copied and adapted some needed functions to work with LFPy from file
+// models/L5PCtemplate.hoc
+//
+// 30.01.2012 ehagen@umb.no
+
+// Fixed problem of looping over the section lists
+//
+// 08.06.2012 ehagen@umb.no
+
+// Copied from folder hay in the python package provided in
+// Miceli, Ness, Einevoll, Schubert (2017) Impedance Spectrum in Cortical Tissue:
+// Implications for Propagation of LFP Signals on the Microscopic Level.  Eneuro 4:1-15.
+// version to work with LFPy
+//
+// May 13, 2020 bea.herreraf@gmail.com
+
+objref this
+
+// $s1 section
+func getLongestBranch(){local maxL,d localobj distallist,sref
+    sprint(tstr,"%s distance()",$s1)
+    execute(tstr,this)
+
+  	if(0==strcmp($s1,"axon")){
+            sprint(tstr,"%s[0] distance(1)",$s1)
+            execute(tstr,this)
+  	}
+		maxL = 0
+		d = 0
+		distallist = new SectionList()
+		forsec $s1 {
+			sref = new SectionRef()
+			if (sref.nchild==0) distallist.append()
+		}
+		forsec distallist{
+			d = distance(1)
+			if(maxL<d) maxL = d
+		}
+		// for the soma case
+		if (maxL == 0) {
+      $s1 {
+        maxL = L
+      }
+    }
+		return maxL
+}
+
+// $s1 section
+ // $2 distance x in micrometers
+ // return list of [1,2] vectors  - of the appropriate section and the location in each vector
+ obfunc locateSites() {local maxL,site,d0,d1,siteX,i localobj vv,ll
+ 	ll = new List()
+
+     sprint(tstr,"%s distance()",$s1)
+     execute(tstr,this)
+
+ 	if(0==strcmp($s1,"axon")){
+     sprint(tstr,"%s[0] distance(1)",$s1)
+     execute(tstr,this)
+ 	}
+
+ 	maxL = getLongestBranch($s1)
+
+ 	site = $2
+ 	i = 0
+ 	forsec $s1 {
+     if (distance(0) < distance(1)) {
+   		d0 = distance(0)
+   		d1 = distance(1)
+   	} else {
+   		d1 = distance(0)
+   		d0 = distance(1)
+   	}
+     if (site <= d1 && site >= d0) {
+       //print $2
+       siteX = (site-d0)/(d1-d0)
+       //print siteX
+       secNum = i
+       //print secNum
+       vv = new Vector()
+       ll.append(vv.append(secNum,siteX))
+ 	}
+ 	i = i+1
+ 	}
+    return ll
+}

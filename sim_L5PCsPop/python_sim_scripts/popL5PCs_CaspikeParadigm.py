@@ -439,7 +439,7 @@ if __name__ == "__main__":
     }
 
     # the number of cells in the population
-    POPULATION_SIZE = 2
+    POPULATION_SIZE = 1000
 
     num_trials = 1  # number of simulation runs
 
@@ -448,15 +448,15 @@ if __name__ == "__main__":
         h("forall delete_section()")
 
         stimulusType = {
-            "HayBattery_active": True,
             "stimulationProtocol": "CriticalFrequency",  # SomaticCurrentPulse,
             # BAC_firing, CriticalFrequency
             "stimulus_subtype": "noisy_current",  # CriticalFrequency:
-            # squarePulse_Train or noisy_current
+            # squarePulse_Train or noisy_current (used in the paper)
             # BAC_firing: BAP, CaBurst, EPSP, or BAC
-            "iAmp": 1.85,
-            # 1.9 -> amplitude for supra-CF  # [nA] mean amplitude
+            "iAmp": 1.9,# [nA] mean amplitude
             # of the pulse
+            # 1.9 -> amplitude for supra-CF
+            # 1.85 -> amplitude for ~CF stimulation
         }
 
         # Define electrode geometry corresponding to a laminar probe:

@@ -9,6 +9,8 @@ Main analysis code for figures in Herrera and Westerberg et al. 2021.
 - LFPy 2.2 (https://github.com/LFPy/LFPy)
 - [CSDplotter-master](https://github.com/espenhgn/CSDplotter)
 - [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction)
+- Elephant (https://elephant.readthedocs.io/en/latest/)
+- Neo (https://neo.readthedocs.io/en/latest/)
 
 ## Description
 - [brainstorm_N2pc_db](brainstorm_N2pc_db): NMTv2 atlas [(Jung et al. 2021)](https://doi.org/10.1016/j.neuroimage.2021.117997) anatomy folder in Brainstorm format. 

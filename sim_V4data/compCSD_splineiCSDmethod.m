@@ -8,12 +8,14 @@ clc
 
 %% Input files
 % -- local field potential
-[namefile, pathfile] =uigetfile('*.mat','File -> Local Field Potential Matrix (Channels x TimePoints)');
+[namefile, pathfile] =uigetfile('*.mat',['File -> Local Field ' ...
+    'Potential Matrix (Channels x TimePoints)']);
 lfp = load([pathfile namefile]); clearvars namefile pathfile
 varName = fieldnames(lfp);
 lfp = lfp.(varName{1});
 % -- asking for the units
-unitsLFP = inputdlg('Enter the units of the LFP (Options: mV, uV and V)','',[1,50]);
+unitsLFP = inputdlg(['Enter the units of the LFP (Options: mV,' ...
+    ' uV and V)'],'',[1,50]);
 unitsLFP = unitsLFP{1};
 % convert LFP to appropriate units if necessary
 switch unitsLFP
@@ -28,7 +30,8 @@ switch unitsLFP
 end
 
 % -- values of z (depth)
-[namefile, pathfile] =uigetfile('*.mat','File -> z-coordinates to compute the CSD (Channels x 1)');
+[namefile, pathfile] =uigetfile('*.mat',['File -> z-coordinates' ...
+    ' to compute the CSD (Channels x 1)']);
 ze = load([pathfile namefile]); clearvars namefile pathfile
 varName = fieldnames(ze);
 ze = ze.(varName{1});
@@ -79,7 +82,8 @@ outMatUnits = {'mm','nA/mm3'}; % output units for the CSD and depth
 
 %% save CSD matrix
 
-[namefile, pathfile] = uiputfile('*.mat','Select folder path to save CSD matrix and enter file name.');
+[namefile, pathfile] = uiputfile('*.mat',['Select folder path to save' ...
+    ' CSD matrix and enter file name.']);
 save([pathfile namefile],'zs', 'iCSD', 'outMatUnits')
 
 %% Visualization
@@ -88,7 +92,8 @@ visualization = inputdlg(['Do you want to plot the CSD map? Enter: yes -> y or '
 visualization = visualization{1};
 switch visualization
     case 'y'
-        timeSpan = inputdlg({'Enter sampling rate in Hz', 'Pre-stimulus time window in ms',...
+        timeSpan = inputdlg({'Enter sampling rate in Hz', ['Pre-stimulus' ...
+            ' time window in ms'],...
             'Post-stimulus time window in ms'},'',[1,50]);
         Fs = str2double(timeSpan{1});
         preWin = str2double(timeSpan{2});

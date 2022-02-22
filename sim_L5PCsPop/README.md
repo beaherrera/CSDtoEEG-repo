@@ -7,6 +7,8 @@
 - LFPy 2.2 (https://github.com/LFPy/LFPy)
 - [CSDplotter-master](https://github.com/espenhgn/CSDplotter)
 - [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction)
+- Elephant (https://elephant.readthedocs.io/en/latest/)
+- Neo (https://neo.readthedocs.io/en/latest/)
 
 ### Description
 

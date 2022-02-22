@@ -12,4 +12,4 @@
 
 ### Description
 - [python_sim_scripts](python_sim_scripts): scripts to run biophysical simulations in Figure 2 of Herrera and Westerberg et al. 2022.
-- [matlab_ana_scripts](matlab_ana_scripts): matlab scripts used for data analysis.
+- [matlab_ana_scripts](matlab_ana_scripts): matlab scripts used to process simulated data and generate Figure 2 C-F.

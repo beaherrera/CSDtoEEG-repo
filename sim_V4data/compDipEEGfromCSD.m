@@ -16,15 +16,19 @@ Ne = length(CSD_contra(:,1)); % total number of electrodes
 %% -- enter cortical parameters
 opts.Interpreter = 'tex';
 definput = {'0.1','3','0.1'}; % default input values
-Parameters = inputdlg({'Enter the inter-electrodes distance in mm', ...
+Parameters = inputdlg({['Enter the inter-electrodes distance in mm ' ...
+    '(must correspond with that of the CSD matrix)'], ...
     'Enter the diameter of the cortical column in mm',...
     'Enter the relative distance of the first electrode with respect to the pial matter in mm'}...
     ,'',[1,90],definput,opts);
-h = str2double(Parameters{1}); % inter-electrodes distance, convert from string to double
-rc = (str2double(Parameters{2}))/2; % cortical column radius, convert from string to double
-a = str2double(Parameters{3}); % inter-electrodes distance, convert from string to double
-zs = (a:h:((Ne-1)*h + a))'; % position of the electrodes along z with respect to pia matter,
-                            % convert from string to double 
+h = str2double(Parameters{1}); % inter-electrodes distance, convert from
+% string to double
+rc = (str2double(Parameters{2}))/2; % cortical column radius, convert from
+% string to double
+a = str2double(Parameters{3}); % inter-electrodes distance, convert from
+% string to double
+zs = (a:h:((Ne-1)*h + a))'; % position of the electrodes along z with
+% respect to pia matter, convert from string to double 
 
 %% Compute Dipolar Moment
 disp('Estimating the current dipole moment')

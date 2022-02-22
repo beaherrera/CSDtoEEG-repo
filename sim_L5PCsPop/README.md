@@ -11,6 +11,5 @@
 - Neo (https://neo.readthedocs.io/en/latest/)
 
 ### Description
-
-### Run
-1. compile mod mechanisms before running simulation script. 
+- [python_sim_scripts](python_sim_scripts): scripts to run biophysical simulations in Figure 2 of Herrera and Westerberg et al. 2022.
+- [matlab_ana_scripts](matlab_ana_scripts): matlab scripts used for data analysis.

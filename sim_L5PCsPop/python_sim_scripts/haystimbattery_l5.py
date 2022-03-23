@@ -4,6 +4,11 @@
 Created on Sat May 23 14:09:38 2020
 
 @author: Beatriz Herrera
+
+Stimulus battery used in Hay et al. (2011). ModelDB Accession Number: 139653.
+
+Functions were based on scripts in simulationcode/ and adapted to work on LFPy2.2.
+
 """
 from __future__ import division
 import numpy as np

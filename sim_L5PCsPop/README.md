@@ -9,6 +9,7 @@
 - [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction)
 - Elephant (https://elephant.readthedocs.io/en/latest/)
 - Neo (https://neo.readthedocs.io/en/latest/)
+- [eegfilt.m](matlab_ana_scripts/eegfilt.m) function from [EEGLAB](https://sccn.ucsd.edu/eeglab/index.php).
 
 ### Description
 - [python_sim_scripts](python_sim_scripts): scripts to run biophysical simulations in Figure 2 of Herrera and Westerberg et al. 2022.

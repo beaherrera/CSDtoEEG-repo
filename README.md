@@ -28,4 +28,4 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
 
 ## Citation
-
+Herrera, B., Westerberg, J. A., Schall, M. S., Maier, A., Woodman, G. F., Schall, J. D., & Riera, J. J. (2022). Resolving the mesoscopic missing link: Biophysical modeling of EEG from cortical columns in primates. bioRxiv. **doi**: https://doi.org/10.1101/2022.03.16.484595.

@@ -4,7 +4,7 @@
 ### Dependencies
 - MATLAB (released 2021b, [The MathWorks](https://www.mathworks.com/?s_tid=gn_logo)). Toolboxes: Signal Processing Toolbox.
 - NEURON simulator (http://www.neuron.yale.edu/neuron)
-- LFPy 2.2 (https://github.com/LFPy/LFPy)
+- LFPy 2.2 (https://github.com/LFPy/LFPy) (Python 3.8)
 - [CSDplotter-master](https://github.com/espenhgn/CSDplotter)
 - [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction)
 - Elephant (https://elephant.readthedocs.io/en/latest/)

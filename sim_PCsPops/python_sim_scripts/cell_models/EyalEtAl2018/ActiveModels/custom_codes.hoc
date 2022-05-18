@@ -1,0 +1,59 @@
+// Modified by Torbjorn Ness, 26/04/2019 to work as TemplateCell in LFPy
+
+// Based on models of the BBP: https://bbp.epfl.ch/nmc-portal/microcircuit
+// Active properties were fitted using the MOO algorithm.
+// See Eyal et al 2017 for details.
+
+
+proc add_few_spines(){localobj sref_list, x_vec,sref
+    E_PAS = -86
+
+    PI = 3.14159265359
+    sref_list = $o1
+    x_vec = $o2
+    neck_diam = $3
+    neck_len = $4
+    spine_head_area = $5
+    ra = $6
+
+
+
+    L_head = 2*sqrt(spine_head_area /4/PI) //sphere has the same surface area as cylinder with L=diam
+
+    diam_head = L_head
+    create spine[2*sref_list.count()]
+
+    for (j=0;j<sref_list.count();j+=1){
+        sref = sref_list.o(j)
+        shaft_x  = x_vec.x[j]
+        spine[2*(j)]{
+            L = neck_len
+            diam = neck_diam
+            insert pas
+            cm =CM
+            g_pas=1/RM
+            e_pas = E_PAS
+            Ra = ra
+            Spines.append()
+
+        }
+        spine[2*(j)+1]{
+            L = L_head
+            diam = diam_head
+            insert pas
+            cm =CM
+            g_pas=1/RM
+            e_pas = E_PAS
+            Ra = ra
+            Spines.append()
+
+        }
+        connect  spine[2*(j)+1](0) ,spine[2*(j)](1)
+        sref.sec{
+            connect spine[2*(j)](0), shaft_x
+        }
+
+
+    }
+
+}

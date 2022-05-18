@@ -14,13 +14,14 @@ import neo
 import quantities as pq
 import matplotlib.pyplot as plt
 import neuron
+import myfunctions
 from neuron import h
 import LFPy
-from hayetalmodel_active_declarations import active_declarations
 from lfpykit import CellGeometry
-from elephant import spike_train_generation  # , statistics  # , spectral
+from elephant import spike_train_generation
 
 SEED = 12
+# np.random.seed(SEED)
 
 """ Functions """
 
@@ -60,8 +61,8 @@ class Population:
 
         # get synaptic times and cell positions, rotations, store in
         # self-object
-        data = np.load("cellsPops_L5PCs.npz")
-        self.cellPositions = data["cellPositions_L5"]
+        data = np.load("cellsPops_L3PCs.npz")
+        self.cellPositions = data["cellPositions_L3"]
 
     def run(self):
         """Execute the proper simulation and collect simulation results."""
@@ -89,39 +90,99 @@ class Population:
 
         return results
 
-    def make_cellHayModelL5PC(self):
+    def make_cellEyalEtAl2018(self):
+        r"""
+        Create LFPy cell object using Eyal et al. 2018 model.
+
+        Copied and addapted from file EEG-master\src\make_data_figure2.py in
+        the python package provided in Næss, S., Halnes, G., Hagen, E.,
+        Hagler Jr,
+        D. J., Dale, A. M., Einevoll, G. T., & Ness, T. V. (2021).
+        Biophysically detailed forward modeling of the neural origin of EEG
+        and MEG signals. NeuroImage, 225, 117467.
+
         """
-        Create LFPy cell object using Hay et al. 2011 model.
+        model_folder = join("cell_models", "EyalEtAl2018")
+        morph_path = join(model_folder, "Morphs",
+                          self.cellParameters['morphology'])
+        add_synapses = False
 
-        Returns
-        -------
-        cell : LFPy.Cell Obj
-             object built on top of NEURON representing biological neuron.
+        if self.cellParameters['cell_model'] is None:
+            """Passive Model."""
+            # loading mechanisms
+            mod_folder = join(model_folder, "mechanisms")
+            if not hasattr(h, 'NMDA'):
+                if "win32" in sys.platform:
+                    h.nrn_load_dll(mod_folder + "/nrnmech.dll")
+                else:
+                    neuron.load_mechanisms(mod_folder)
 
-        """
-        # General simulation parameters
-        holding_potential = -80  # [mV] resting membrane potential
+            cell_parameters = {
+                'v_init': -70,
+                'morphology': morph_path,
+                # S/cm^2, mV
+                'passive_parameters': {'g_pas': 1./30000, 'e_pas': -70},
+                'Ra': 150,  # Ω cm
+                'cm': 1,  # µF/cm^2
+                'nsegs_method': "lambda_f",
+                "lambda_f": 100,
+                'dt': 2**-4,  # [ms] Should be a power of 2
+                'tstart': -10,  # [ms] Simulation start time
+                'tstop': self.cellParameters['tstop'],  # [ms] Simulation
+                # end time
+                "pt3d": True,
+                'passive': True
+            }
 
-        # define cell parameters used as input to cell-class
-        model_pth = join("cell_models", "HayModel")
-        cellParameters = {
-            "morphology": join(model_pth, "morphologies", "cell1.hoc"),
-            "v_init": holding_potential,  # initial crossmembrane potential
-            "passive": False,  # switch on passive mechs
-            "nsegs_method": "lambda_f",  # method for setting number of segments,
-            "lambda_f": 100,  # segments are isopotential at this frequency
-            # dt of LFP and NEURON simulation.
-            "dt": self.cellParameters['dt'],
-            "tstart": -250,  # start time, recorders start at t=0
-            # stop time, end of the simulation
-            "tstop": self.cellParameters['tstop'],
-            "custom_code": [join(model_pth, "morphologies", "custom_codes.hoc")],
-            "custom_fun": [active_declarations],  # will execute this function
-            "custom_fun_args": [{}],
-        }
+            # create cell with parameters in dictionary
+            cell = LFPy.Cell(**cell_parameters)
 
-        cell = LFPy.Cell(**cellParameters)
-        cell.set_rotation(z=np.pi)
+        else:
+            """Active Model."""
+            # loading mechanisms
+            mod_folder = join(model_folder,
+                              "ActiveMechanisms")
+            if not hasattr(h, 'NaTg'):
+                if "win32" in sys.platform:
+                    h.nrn_load_dll(mod_folder + "/nrnmech.dll")
+                else:
+                    neuron.load_mechanisms(mod_folder)
+
+            # get the template name
+            model_path = myfunctions.posixpth(
+                join(model_folder, "ActiveModels",
+                     self.cellParameters['cell_model'] + '_mod.hoc'))
+            f = open(model_path, 'r')
+            templatename = myfunctions.get_templatename(f)
+            f.close()
+            if not hasattr(h, templatename):
+                # Load main cell template
+                h.load_file(1, model_path)
+
+            cell_parameters = {
+                'morphology': myfunctions.posixpth(morph_path),
+                'templatefile': model_path,
+                'templatename': templatename,
+                'templateargs': myfunctions.posixpth(morph_path),
+                'v_init': -86,
+                'passive': False,
+                'dt': self.cellParameters['dt'],  # [ms] Should be a power of 2
+                'tstart': -10,  # [ms] Simulation start time
+                'tstop': self.cellParameters['tstop'],  # [ms] Simulation
+                # end time
+                "pt3d": True,
+                'nsegs_method': "lambda_f",
+                "lambda_f": 100,
+            }
+
+            # create cell with parameters in dictionary
+            cell = LFPy.TemplateCell(**cell_parameters)
+
+        # rotate the morphology
+        cellRotations = [-np.pi / 2, -np.pi / 7, 0]
+        cell.set_rotation(x=cellRotations[0])
+        cell.set_rotation(y=cellRotations[1])
+        cell.set_rotation(z=cellRotations[2])
 
         return cell
 
@@ -140,7 +201,7 @@ class Population:
 
         """
         # Initialize cell instance
-        cell = self.make_cellHayModelL5PC()
+        cell = self.make_cellEyalEtAl2018()
 
         # set the position of midpoint in soma
         cell.set_pos(
@@ -151,14 +212,14 @@ class Population:
 
         # loading package with stimulus
         neuron.h.load_file("custom_codes.hoc")
-        from haystimbattery_l5 import critical_frequency
+        from haystimbattery_l3 import critical_frequency
 
         CFparadigm_params = {
             # Stimulus Type: squarePulse_Train or noisy_current
             "stimulus_type": self.stimulusType["stimulus_subtype"],
-            "distalpoint": 620,  # [um] distal dendrites recording location
+            "distalpoint": 258.7071228,  # [um] distal dendrites
+            # recording location
             "freq": 120,  # [Hz] frequency of the pulses 70 and 120
-            # 'stimulus_onset': 10              # [ms] stimulus onset
             "iAmp": self.stimulusType["iAmp"],
         }
         # inserting stimulus
@@ -195,7 +256,7 @@ class Population:
             cell.somav, units="mV", sampling_rate=(1 / (dt * 1e-3)) * pq.Hz
         )
         signal_dendv = neo.core.AnalogSignal(
-            cell.vmem[616, :], units="mV",
+            cell.vmem[612, :], units="mV",
             sampling_rate=(1 / (dt * 1e-3)) * pq.Hz
         )
 
@@ -208,11 +269,11 @@ class Population:
         )
 
         saveData = {
-            'cell_geo': cell_geo,  # geometry L5 PCs strectched
+            'cell_geoStretched': cell_geo,  # geometry L3 PCs strectched
             # [mV] somatic membrane potatential
             'Vs': np.array(cell.somav),
             # [mV] distal dendrites memberane potential
-            'v_mbp': np.array(cell.vmem[616, :]),
+            'v_mbp': np.array(cell.vmem[612, :]),
             # [ms] time of presynaptic spikes Ncells x Nsynp x Ntskp
             'It': np.array(cell.imem),  # transmembrane currents
             'soma_spkTimes': soma_spkTimes,  # [s] times of somatic APs
@@ -307,23 +368,23 @@ if __name__ == "__main__":
     cellParameters = {
         "tstop": 800,
         "dt": dt,
+        'cell_model': 'cell0603_08_model_602',
+        'morphology': '2013_03_06_cell03_789_H41_03.ASC',
     }
 
     # the number of cells in the population
-    POPULATION_SIZE = 2  # 1000
-
-    num_trials = 1  # number of simulation runs
+    POPULATION_SIZE = 2  # 2200
 
     stimulusType = {
+        "HayBattery_active": True,
         "stimulationProtocol": "CriticalFrequency",  # SomaticCurrentPulse,
         # BAC_firing, CriticalFrequency
         "stimulus_subtype": "noisy_current",  # CriticalFrequency:
-        # squarePulse_Train or noisy_current (used in the paper)
+        # squarePulse_Train or noisy_current
         # BAC_firing: BAP, CaBurst, EPSP, or BAC
-        "iAmp": 1.9,  # [nA] mean amplitude
+        "iAmp": 1.9,
+        # 1.9 -> amplitude for supra-CF  # [nA] mean amplitude
         # of the pulse
-        # 1.9 -> amplitude for supra-CF
-        # 1.85 -> amplitude for ~CF stimulation
     }
 
     # Define electrode geometry corresponding to a laminar probe:
@@ -341,9 +402,8 @@ if __name__ == "__main__":
     # will draw random cell locations within cylinder constraints:
     populationParameters = {
         'radius': 1500,   # [um] radius of the cortical column
-        'ztop': -1250,    # [um] upper limit of the neurons position 600
-        # [um] lower limit of the neurons position 1100
-        'zbottom': -1750
+        'zmin': -675,  # [um] upper limit of the neurons position
+        'zmax': -750  # [um] lower limit of the neurons position
     }
 
     data_folder = join("CSDtoEEG_paper_sim", "sim_L3PCs",
@@ -358,7 +418,7 @@ if __name__ == "__main__":
         else:
             print("Successfully created the directory %s " % data_folder)
 
-    for runNumb in np.arange(1, num_trials + 1):
+    for runNumb in np.arange(1, 2):
 
         h("forall delete_section()")
 

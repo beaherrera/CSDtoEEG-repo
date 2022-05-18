@@ -5,7 +5,7 @@ clc
 
 %% Folder Paths
 
-pathData = 'simData_10ms'; % name of the folder where simulated data is
+pathData = 'L5_simData_10ms'; % name of the folder where simulated data is
 % stored (see folder for all simulation results found on the paper)
 
 pathLeadFieldIN = []; % path to point-sources lead field matrices (data

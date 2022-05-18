@@ -12,7 +12,9 @@ ts = t0:dt:tf;  %[ms] time span
 
 %% Folder Paths
 
-pathData = 'simData_10ms'; % name of the folder where simulated data is stored
+% folders name: L3_simData_10ms and L5_simData_10ms
+pathData = 'L3_simData_10ms'; % name of the folder where simulated data
+% is stored
 
 pathLeadField = []; % path to lead fields
 
@@ -48,61 +50,67 @@ end
 
 %% calculate EEG for a column center at vert's coordinates
 
+num_neurons = 1000; % number of simulated neurons
+% 2200 L3 PCs and 1000 L5 PCs were simulated
+
 vert = [102, 431, 437, 862, 1835, 3594, 4070, ...
-    4117, 4180, 5949, 7441, 14288, 13461, 11787, 11701]; 
+    4117, 4180, 5949, 7441, 14288, 13461, 11787, 11701];
 
-% p = gcp('nocreate'); % If no pool, do not create new one.
-% if isempty(p)
-%     parpool(4);
-% end
+p = gcp('nocreate'); % If no pool, do not create new one.
+if isempty(p)
+    parpool(4); % modify if more cpus are available
+end
 
-for jj = 1:length(vert)
+% dipolar approaches
+parfor jj = 1:length(vert)
 
-    % detailed approach
-    cal_EEGIn(vert(jj), pathLeadFieldIN, path2CellsData, fileSave)
-    
-    % dipolar approaches
     cal_EEGdip(vert(jj), pathLeadField, ds_In, d_CSD, fileSaveDip, ...
         fileSaveDipCSD)
+
+end
+
+% detailed approach
+for jj = 1:length(vert) % parfor used inside the function
+
+    cal_EEGIn(vert(jj), num_neurons, pathLeadFieldIN, path2CellsData, fileSave)
 
 end
 
 
 %% sub-function
 
-function cal_EEGIn(vert, pathLeadFieldIN,pathIt, fileSave)
+function cal_EEGIn(vert, num_neurons, pathLeadFieldIN,pathIt, fileSave)
 
-% sprintf('vertex %d',vert)
+sprintf('vertex %d',vert)
 
-EEGIn = 0;
+% calculate the EEG for each neuron individually
+parfor ii = 0:(num_neurons - 1)
 
-for ii = 0:999
-
-    % load lead field
-    load(fullfile(pathLeadFieldIN,'leadField', ...
-        ['leadFieldMonBEMVert' num2str(vert) ...
-        'C' num2str(ii) '.mat']),'Keoo');
-
-    % convert to average reference
-    Ne = length(Keoo(:,1));
-    Hn = eye(Ne) - (ones(Ne,1)*ones(Ne,1)')/Ne;
-
-    Ke = Hn*Keoo;
-
-    % load transmembrane currents
-    file = fullfile(pathIt, ['NeuronsData_r1_n#' num2str(ii) '.mat']);
-    load(file, 'It') % nA
-
-    % calculate EEG
-    EEG_In = Ke*It; % nV
-    EEGIn = EEGIn + EEG_In; % nV
-
-    % save EEG
-    save(fullfile(fileSave, ...
-        ['EEGIn_Vert' num2str(vert) 'C' num2str(ii) '.mat']), ...
-        'EEG_In');
+    cal_vert_EEGIn(pathLeadFieldIN, pathIt, vert, ii, fileSave)
 
 end
+
+end
+
+function cal_vert_EEGIn(pathLeadFieldIN, pathIt, vert, ii, fileSave)
+
+load(fullfile(pathLeadFieldIN,'leadField', ...
+    ['leadFieldMonBEMVert' num2str(vert) ...
+    'C' num2str(ii) '.mat']),'Keoo');
+
+Ne = length(Keoo(:,1));
+Hn = eye(Ne) - (ones(Ne,1)*ones(Ne,1)')/Ne;
+
+Ke = Hn*Keoo;
+
+file = fullfile(pathIt, ['NeuronsData_r1_n#' num2str(ii) '.mat']);
+load(file, 'It') % nA
+
+EEG_In = Ke*It; % nV
+
+save(fullfile(fileSave, ...
+    ['EEGIn_Vert' num2str(vert) 'C' num2str(ii) '.mat']), ...
+    'EEG_In');
 
 end
 

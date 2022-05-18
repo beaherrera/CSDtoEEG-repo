@@ -4,6 +4,9 @@ clear
 clc
 
 %% paths
+% folders name: L3_simData_10ms and L5_simData_10ms
+pathData = 'L3_simData_10ms'; % name of the folder where simulated data
+% is stored
 
 EEG_folder = []; % path to simulated EEGs for each approach
 
@@ -17,6 +20,9 @@ Fs_new = 1e3; % 1kHz new sampling frequency
 
 %% calculate errors
 
+num_neurons = 1000; % number of simulated neurons
+% 2200 L3 PCs and 1000 L5 PCs were simulated
+
 vert =[102, 431, 437, 862, 1835, 3594, 4070, ...
     4117, 4180, 5949, 7441, 14288, 13461, 11787, 11701];
 
@@ -25,7 +31,7 @@ RDM_values = zeros(length(vert),2);
 
 for ii=1:length(vert)
 
-    [MAG_valuesi, RDM_valuesi] = error_fun(vert(ii), EEG_folder, ts, Fs_new);
+    [MAG_valuesi, RDM_valuesi] = error_fun(vert(ii), num_neurons, EEG_folder, ts, Fs_new);
 
     MAG_values(ii, :) = MAG_valuesi;
 
@@ -35,7 +41,7 @@ end
 
 %% save errors
 
-save('simData_10ms\EEG_errors.mat', 'MAG_values','RDM_values')  
+save(fullfile(pathData, 'EEG_errors.mat'), 'MAG_values','RDM_values')  
 
 %% generate figure
 
@@ -77,7 +83,7 @@ set(gca,'linewidth',2,'fontsize',10,'fontweight','bold')
 %% subfunctions
 
 
-function [MAG_values, RDM_values] = error_fun(vert_ind, EEG_folder, ts, Fs_new)
+function [MAG_values, RDM_values] = error_fun(vert_ind, num_neurons, EEG_folder, ts, Fs_new)
 % calculate errors
 % 
 % Inputs:
@@ -94,7 +100,7 @@ sprintf('vertex %d',vert_ind)
 
 EEGIn = 0;
 
-for n = 0:999
+for n = 0:(num_neurons - 1)
 
     load(fullfile(EEG_folder, 'EEG_In_10ms', ...
         ['EEGIn_Vert' num2str(vert_ind) 'C' num2str(n) '.mat']), ...

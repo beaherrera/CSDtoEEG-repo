@@ -4,7 +4,9 @@ clear
 clc
 
 %% paths
-pathData = 'simData_10ms'; % name of the folder where simulated data is stored
+% folders name: L3_simData_10ms and L5_simData_10ms
+pathData = 'L3_simData_10ms'; % name of the folder where simulated data
+% is stored
 
 pathCurrent = []; % path to neurons' transmembrane currents (too large
 % to include on GitHub repo) generated during biophysical sim
@@ -17,6 +19,10 @@ if ~exist(savePath, 'dir') % checks if the folder already exists
 end
 
 %% parameters
+
+num_neurons = 1000; % number of simulated neurons
+% 2200 L3 PCs and 1000 L5 PCs were simulated
+
 load(fullfile(pathData,'simLFP.mat'), "ze");
 h = mean(diff(ze)); % [m] inter-electrodes distance
 Ne = length(ze); % number of electrodes
@@ -26,7 +32,7 @@ a = ze(1); % position of the first electrode
 
 d = 0;
 
-for ii=0:999
+for ii=0:(num_neurons - 1)
 
     sprintf('neuron %d', ii)
 

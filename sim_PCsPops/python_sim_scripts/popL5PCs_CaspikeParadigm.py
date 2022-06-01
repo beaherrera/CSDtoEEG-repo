@@ -346,7 +346,7 @@ if __name__ == "__main__":
         'zbottom': -1750
     }
 
-    data_folder = join("CSDtoEEG_paper_sim", "sim_L3PCs",
+    data_folder = join("CSDtoEEG_paper_sim", "sim_L5PCs",
                        stimulusType["stimulationProtocol"],
                        stimulusType["stimulus_subtype"])
 

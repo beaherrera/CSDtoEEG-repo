@@ -1,5 +1,5 @@
 %% Compute the dipolar moment and the resulting EEG from the CSD
-% Copyrtight 2021, Beatriz Herrera
+% author: Beatriz Herrera
 % Distributed under GPL-3.0 License
 %   Created: November 9th, 2020
 

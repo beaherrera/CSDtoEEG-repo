@@ -15,7 +15,7 @@ import LFPy
 np.random.seed(0)
 
 
-''' Functions '''
+""" Functions """
 
 
 def make_cellHayModelL5PC(tstop, dt):
@@ -24,15 +24,14 @@ def make_cellHayModelL5PC(tstop, dt):
 
     Parameters
     ----------
-    tstop : TYPE
-        DESCRIPTION.
-    dt : TYPE
-        DESCRIPTION.
+    tstop : float
+        length of the simulation.
+    dt : float
+        integration time step.
 
     Returns
     -------
-    cell : TYPE
-        DESCRIPTION.
+    cell : LFPy.Cell Obj
 
     """
     # General simulation parameters
@@ -78,19 +77,20 @@ def drawRandCellPositions(POPULATION_SIZE, populationParameters):
     cellPositions : ndarray
         x,y,z coordiantes of the cells in the population.
 
-    code taken and adapted from LFPy example example_mpi.py.
+    code copied and adapted from LFPy package examples/example_mpi.py.
 
     """
     cellPositions = []
     for cellindex in range(POPULATION_SIZE):
-        r = np.sqrt(np.random.rand()) * \
-            populationParameters['radius']
+        r = np.sqrt(np.random.rand()) * populationParameters["radius"]
         theta = np.random.rand() * 2 * np.pi
         x = r * np.sin(theta)
         y = r * np.cos(theta)
-        z = np.random.rand() * (populationParameters['zbottom'] -
-                                populationParameters['ztop']) + \
-            populationParameters['ztop']
+        z = (
+            np.random.rand()
+            * (populationParameters["zbottom"] - populationParameters["ztop"])
+            + populationParameters["ztop"]
+        )
         cellPositions.append([x, y, z])
     cellPositions = np.array(cellPositions)
 
@@ -120,17 +120,24 @@ def columnPlot(num_neurons, positions, electrodeParameters):
     fig = plt.figure(figsize=[2.5, 3], dpi=1000)
     color = iter(plt.cm.rainbow(np.linspace(0, 1, num_neurons)))
 
-    ax = fig.add_axes([0.01, 0.0, 1, 1.0],
-                      aspect='equal', frameon=False,
-                      xticks=[], xticklabels=[],
-                      yticks=[], yticklabels=[])
+    ax = fig.add_axes(
+        [0.01, 0.0, 1, 1.0],
+        aspect="equal",
+        frameon=False,
+        xticks=[],
+        xticklabels=[],
+        yticks=[],
+        yticklabels=[],
+    )
     for cellindex in range(num_neurons):
         "L5-PCs"
         cell = make_cellHayModelL5PC(tstop, dt)
 
-        cell.set_pos(x=positions[cellindex, 0],
-                     y=positions[cellindex, 1],
-                     z=positions[cellindex, 2])
+        cell.set_pos(
+            x=positions[cellindex, 0],
+            y=positions[cellindex, 1],
+            z=positions[cellindex, 2],
+        )
 
         zips = []
 
@@ -138,24 +145,28 @@ def columnPlot(num_neurons, positions, electrodeParameters):
             zips.append(list(zip(x, z)))
 
         c = next(color)
-        polycol2 = PolyCollection(zips,
-                                  edgecolors='none',
-                                  facecolors=c,
-                                  zorder=positions[cellindex,
-                                                   1])
+        polycol2 = PolyCollection(
+            zips, edgecolors="none", facecolors=c, zorder=positions[cellindex, 1]
+        )
         ax.add_collection(polycol2)
 
-    ax.plot(electrodeParameters['x'],
-            electrodeParameters['z'],
-            marker='o', markersize=0.5, linewidth=0.5, color='k',
-            clip_on=False, zorder=450)
+    ax.plot(
+        electrodeParameters["x"],
+        electrodeParameters["z"],
+        marker="o",
+        markersize=0.5,
+        linewidth=0.5,
+        color="k",
+        clip_on=False,
+        zorder=450,
+    )
 
-    fig.savefig('neurons_plot.pdf', dpi=1000)
-    fig.savefig('neurons_plot.jpeg', dpi=1000)
+    fig.savefig("neurons_plot.pdf", dpi=1000)
+    fig.savefig("neurons_plot.jpeg", dpi=1000)
 
 
 if __name__ == "__main__":
-    tstop, dt = 100, 2**-2
+    tstop, dt = 100, 2 ** -2
 
     # Define electrode geometry corresponding to a laminar probe:
     a = 50  # location of the first electrode relative to the grey matter / CSF
@@ -163,33 +174,33 @@ if __name__ == "__main__":
     electrode_spacing = 100  # inter-electrodes space
     Ne = 17  # number of electrodes inside the cortex
     # z coordinates of the electrodes in microns
-    z = -np.mgrid[a:(Ne*electrode_spacing+electrode_spacing):electrode_spacing]
+    z = -np.mgrid[a : (Ne * electrode_spacing + electrode_spacing) : electrode_spacing]
 
     electrodeParameters = {
-        'x': np.zeros(z.size),
-        'y': np.zeros(z.size),
-        'z': z,
-        'sigma': 0.33,            # S/m
-        'method': 'pointsource'   # method used to compute the LFP
+        "x": np.zeros(z.size),
+        "y": np.zeros(z.size),
+        "z": z,
+        "sigma": 0.33,  # S/m
+        "method": "pointsource",  # method used to compute the LFP
     }
 
     num_neurons = 1000  # total number of neurons
 
     # will draw random cell locations within cylinder constraints:
     populationParameters = {
-        'radius': 1500,   # [um] radius of the cortical column
-        'ztop': -1250,    # [um] upper limit of the neurons position
-        'zbottom': -1750     # [um] lower limit of the neurons position
+        "radius": 1500,  # [um] radius of the cortical column
+        "ztop": -1250,  # [um] upper limit of the neurons position
+        "zbottom": -1750,  # [um] lower limit of the neurons position
     }
 
     # generate neurons location
     # cellpositions = drawRandCellPositions(num_neurons, populationParameters)
 
-    # load neurons location if already generated and you're just plotting,
+    # load neurons location if already generated and just plot them,
     # otherwise: comment next lines and uncomment call to
     # drawRandCellPositions() above
-    data = np.load('cellsPops_L5PCs.npz')
-    cellpositions = data['cellPositions_L5']
+    data = np.load("cellsPops_L5PCs.npz")
+    cellpositions = data["cellPositions_L5"]
     # plot neurons location
     columnPlot(num_neurons, cellpositions, electrodeParameters)
 

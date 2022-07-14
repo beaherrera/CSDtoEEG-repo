@@ -27,9 +27,15 @@ SEED = 12
 
 
 class Population:
-    """Population class."""
+    """
+    L3 Pyramidal Neuron Population class.
 
-    """Copied and adapted to our purposes from LFPy examples: example_mpi.py"""
+    Create a population (unconnected cells) of 'POPULATION_SIZE' L3 PCs
+    described by the Eyal et al. 2018 model, consisting of LFPy.Cell objects.
+
+    Based on the prototype cell population in example_mpi.py from LFPy package
+    examples/.
+    """
 
     def __init__(
         self,
@@ -45,11 +51,12 @@ class Population:
         Class initialization.
 
         POPULATION_SIZE:       int, number of cells
-        cellParameters:        dict
-        populationParameters:  dict
-        electrodeParameters:   dict
-        stimulusType:     dict
-        inputParameters:       dict
+        cellParameters:        dict, neuron model and simulation parameters
+        populationParameters:  dict, cortical column parameters
+        electrodeParameters:   dict, electrodes geometry
+        stimulusType:          dict, stimulus specifications
+        runNumb:               int, simulated trial number
+        data_folder:           str, path to folder where results will be stored
         """
         self.POPULATION_SIZE = POPULATION_SIZE
         self.cellParameters = cellParameters
@@ -103,35 +110,34 @@ class Population:
 
         """
         model_folder = join("cell_models", "EyalEtAl2018")
-        morph_path = join(model_folder, "Morphs",
-                          self.cellParameters['morphology'])
+        morph_path = join(model_folder, "Morphs", self.cellParameters["morphology"])
         add_synapses = False
 
-        if self.cellParameters['cell_model'] is None:
+        if self.cellParameters["cell_model"] is None:
             """Passive Model."""
             # loading mechanisms
             mod_folder = join(model_folder, "mechanisms")
-            if not hasattr(h, 'NMDA'):
+            if not hasattr(h, "NMDA"):
                 if "win32" in sys.platform:
                     h.nrn_load_dll(mod_folder + "/nrnmech.dll")
                 else:
                     neuron.load_mechanisms(mod_folder)
 
             cell_parameters = {
-                'v_init': -70,
-                'morphology': morph_path,
+                "v_init": -70,
+                "morphology": morph_path,
                 # S/cm^2, mV
-                'passive_parameters': {'g_pas': 1./30000, 'e_pas': -70},
-                'Ra': 150,  # Ω cm
-                'cm': 1,  # µF/cm^2
-                'nsegs_method': "lambda_f",
+                "passive_parameters": {"g_pas": 1.0 / 30000, "e_pas": -70},
+                "Ra": 150,  # Ω cm
+                "cm": 1,  # µF/cm^2
+                "nsegs_method": "lambda_f",
                 "lambda_f": 100,
-                'dt': 2**-4,  # [ms] Should be a power of 2
-                'tstart': -10,  # [ms] Simulation start time
-                'tstop': self.cellParameters['tstop'],  # [ms] Simulation
+                "dt": 2 ** -4,  # [ms] Should be a power of 2
+                "tstart": -10,  # [ms] Simulation start time
+                "tstop": self.cellParameters["tstop"],  # [ms] Simulation
                 # end time
                 "pt3d": True,
-                'passive': True
+                "passive": True,
             }
 
             # create cell with parameters in dictionary
@@ -140,9 +146,8 @@ class Population:
         else:
             """Active Model."""
             # loading mechanisms
-            mod_folder = join(model_folder,
-                              "ActiveMechanisms")
-            if not hasattr(h, 'NaTg'):
+            mod_folder = join(model_folder, "ActiveMechanisms")
+            if not hasattr(h, "NaTg"):
                 if "win32" in sys.platform:
                     h.nrn_load_dll(mod_folder + "/nrnmech.dll")
                 else:
@@ -150,9 +155,13 @@ class Population:
 
             # get the template name
             model_path = myfunctions.posixpth(
-                join(model_folder, "ActiveModels",
-                     self.cellParameters['cell_model'] + '_mod.hoc'))
-            f = open(model_path, 'r')
+                join(
+                    model_folder,
+                    "ActiveModels",
+                    self.cellParameters["cell_model"] + "_mod.hoc",
+                )
+            )
+            f = open(model_path, "r")
             templatename = myfunctions.get_templatename(f)
             f.close()
             if not hasattr(h, templatename):
@@ -160,18 +169,18 @@ class Population:
                 h.load_file(1, model_path)
 
             cell_parameters = {
-                'morphology': myfunctions.posixpth(morph_path),
-                'templatefile': model_path,
-                'templatename': templatename,
-                'templateargs': myfunctions.posixpth(morph_path),
-                'v_init': -86,
-                'passive': False,
-                'dt': self.cellParameters['dt'],  # [ms] Should be a power of 2
-                'tstart': -10,  # [ms] Simulation start time
-                'tstop': self.cellParameters['tstop'],  # [ms] Simulation
+                "morphology": myfunctions.posixpth(morph_path),
+                "templatefile": model_path,
+                "templatename": templatename,
+                "templateargs": myfunctions.posixpth(morph_path),
+                "v_init": -86,
+                "passive": False,
+                "dt": self.cellParameters["dt"],  # [ms] Should be a power of 2
+                "tstart": -10,  # [ms] Simulation start time
+                "tstop": self.cellParameters["tstop"],  # [ms] Simulation
                 # end time
                 "pt3d": True,
-                'nsegs_method': "lambda_f",
+                "nsegs_method": "lambda_f",
                 "lambda_f": 100,
             }
 
@@ -223,8 +232,7 @@ class Population:
             "iAmp": self.stimulusType["iAmp"],
         }
         # inserting stimulus
-        cell, synapse, isyn, idx_distDen = critical_frequency(
-            cell, **CFparadigm_params)
+        cell, synapse, isyn, idx_distDen = critical_frequency(cell, **CFparadigm_params)
 
         # create extracellular electrode object
         electrode = LFPy.RecExtElectrode(cell, **self.electrodeParameters)
@@ -232,9 +240,9 @@ class Population:
         # Parameters for the cell.simulate() call,
         # recording membrane- and syn.-currents
         simulationParameters = {
-            'probes': [electrode],
-            'rec_imem': True,  # Record Membrane currents during simulation
-            'rec_vmem': True,  # record membrane voltage
+            "probes": [electrode],
+            "rec_imem": True,  # Record Membrane currents during simulation
+            "rec_vmem": True,  # record membrane voltage
         }
 
         # perform NEURON simulation, results saved as attributes in cell
@@ -256,8 +264,7 @@ class Population:
             cell.somav, units="mV", sampling_rate=(1 / (dt * 1e-3)) * pq.Hz
         )
         signal_dendv = neo.core.AnalogSignal(
-            cell.vmem[612, :], units="mV",
-            sampling_rate=(1 / (dt * 1e-3)) * pq.Hz
+            cell.vmem[612, :], units="mV", sampling_rate=(1 / (dt * 1e-3)) * pq.Hz
         )
 
         soma_spkTimes = spike_train_generation.peak_detection(
@@ -269,38 +276,51 @@ class Population:
         )
 
         saveData = {
-            'cell_geoStretched': cell_geo,  # geometry L3 PCs strectched
+            "cell_geoStretched": cell_geo,  # geometry L3 PCs strectched
             # [mV] somatic membrane potatential
-            'Vs': np.array(cell.somav),
+            "Vs": np.array(cell.somav),
             # [mV] distal dendrites memberane potential
-            'v_mbp': np.array(cell.vmem[612, :]),
+            "v_mbp": np.array(cell.vmem[612, :]),
             # [ms] time of presynaptic spikes Ncells x Nsynp x Ntskp
-            'It': np.array(cell.imem),  # transmembrane currents
-            'soma_spkTimes': soma_spkTimes,  # [s] times of somatic APs
-            'dend_spkTimes': dend_spkTimes,  # [s]
-            'LFP_neuron': electrode.data,  # [mV] lfp produced by the neuron
+            "It": np.array(cell.imem),  # transmembrane currents
+            "soma_spkTimes": soma_spkTimes,  # [s] times of somatic APs
+            "dend_spkTimes": dend_spkTimes,  # [s]
+            "LFP_neuron": electrode.data,  # [mV] lfp produced by the neuron
         }
 
         # mat files
-        io.savemat(join(self.data_folder, 'NeuronsData_r' + str(self.runNumb) +
-                        '_n#' +
-                        str(cellindex) + '.mat'), saveData)
+        io.savemat(
+            join(
+                self.data_folder,
+                "NeuronsData_r" + str(self.runNumb) + "_n#" + str(cellindex) + ".mat",
+            ),
+            saveData,
+        )
 
         # return dict with primary results from simulation
-        return {'LFP': electrode.data,
-                }
+        return {
+            "LFP": electrode.data,
+        }
 
     def save_simData(self):
         """Save simulations data."""
         saveData = {
-            'ze': self.electrodeParameters['z'],  # [um] electrodes position
-            'LFP': self.LFP,                     # [mV] LFP values
+            "ze": self.electrodeParameters["z"],  # [um] electrodes position
+            "LFP": self.LFP,  # [mV] LFP values
         }
 
         # mat files
-        io.savemat(join(self.data_folder, 'SimData_r' + str(self.runNumb) +
-                   '_PS' + str(self.POPULATION_SIZE) + '.mat'),
-                   saveData)
+        io.savemat(
+            join(
+                self.data_folder,
+                "SimData_r"
+                + str(self.runNumb)
+                + "_PS"
+                + str(self.POPULATION_SIZE)
+                + ".mat",
+            ),
+            saveData,
+        )
 
     def plotstuff(self):
         """
@@ -368,29 +388,27 @@ if __name__ == "__main__":
     cellParameters = {
         "tstop": 800,
         "dt": dt,
-        'cell_model': 'cell0603_08_model_602',
-        'morphology': '2013_03_06_cell03_789_H41_03.ASC',
+        "cell_model": "cell0603_08_model_602",
+        "morphology": "2013_03_06_cell03_789_H41_03.ASC",
     }
 
     # the number of cells in the population
     POPULATION_SIZE = 2  # 2200
 
     stimulusType = {
-        "HayBattery_active": True,
-        "stimulationProtocol": "CriticalFrequency",  # SomaticCurrentPulse,
-        # BAC_firing, CriticalFrequency
         "stimulus_subtype": "noisy_current",  # CriticalFrequency:
         # squarePulse_Train or noisy_current
         # BAC_firing: BAP, CaBurst, EPSP, or BAC
-        "iAmp": 1.9,
-        # 1.9 -> amplitude for supra-CF  # [nA] mean amplitude
+        "iAmp": 1.9,  # [nA] mean amplitude
         # of the pulse
+        # 1.9 -> amplitude for supra
+        # 1.85 -> threshold input
     }
 
     # Define electrode geometry corresponding to a laminar probe:
     a = 50
     electrode_spacing = 100
-    z = -np.mgrid[a:(17*100+100):electrode_spacing]  # microns
+    z = -np.mgrid[a : (17 * 100 + 100) : electrode_spacing]  # microns
     electrodeParameters = {
         "x": np.zeros(z.size),
         "y": np.zeros(z.size),
@@ -401,14 +419,16 @@ if __name__ == "__main__":
 
     # will draw random cell locations within cylinder constraints:
     populationParameters = {
-        'radius': 1500,   # [um] radius of the cortical column
-        'zmin': -675,  # [um] upper limit of the neurons position
-        'zmax': -750  # [um] lower limit of the neurons position
+        "radius": 1500,  # [um] radius of the cortical column
+        "zmin": -675,  # [um] upper limit of the neurons position
+        "zmax": -750,  # [um] lower limit of the neurons position
     }
 
-    data_folder = join("CSDtoEEG_paper_sim", "sim_L3PCs",
-                       stimulusType["stimulationProtocol"],
-                       stimulusType["stimulus_subtype"])
+    data_folder = join(
+        "CSDtoEEG_paper_sim",
+        "sim_L3PCs",
+        stimulusType["stimulus_subtype"],
+    )
 
     if not os.path.isdir(data_folder):
         try:

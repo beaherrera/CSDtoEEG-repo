@@ -315,8 +315,6 @@ if __name__ == "__main__":
     num_trials = 1  # number of simulation runs
 
     stimulusType = {
-        "stimulationProtocol": "CriticalFrequency",  # SomaticCurrentPulse,
-        # BAC_firing, CriticalFrequency
         "stimulus_subtype": "noisy_current",  # CriticalFrequency:
         # squarePulse_Train or noisy_current (used in the paper)
         # BAC_firing: BAP, CaBurst, EPSP, or BAC
@@ -347,7 +345,6 @@ if __name__ == "__main__":
     }
 
     data_folder = join("CSDtoEEG_paper_sim", "sim_L5PCs",
-                       stimulusType["stimulationProtocol"],
                        stimulusType["stimulus_subtype"])
 
     if not os.path.isdir(data_folder):

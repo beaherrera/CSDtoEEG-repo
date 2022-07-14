@@ -57,8 +57,7 @@ def _get_apic_idx_outputMatrix(cell, int_idx, int_seg):
     return i
 
 
-def _make_squarePulse_Train(cell, pulseNum=5, freq=120,
-                            pulseDur=5, pulseAmp=1.99):
+def _make_squarePulse_Train(cell, pulseNum=5, freq=120, pulseDur=5, pulseAmp=1.99):
     """
     Create a Square Pulses input current.
 
@@ -91,8 +90,7 @@ def _make_squarePulse_Train(cell, pulseNum=5, freq=120,
         tStart_idx = int(round(pulseStart / cell.dt + 1))
         tEnd_idx = int(round(pulseEnd / cell.dt + 1))
 
-        It[tStart_idx:tEnd_idx:1] = -pulseAmp * \
-            np.ones((tEnd_idx - tStart_idx))
+        It[tStart_idx:tEnd_idx:1] = -pulseAmp * np.ones((tEnd_idx - tStart_idx))
 
         # print('Pulse dur: %d' % ((tEnd_idx - tStart_idx)*cell.dt))
         # print('stim_start: %d \n stim_end: %d \n' % (pulseStart, pulseEnd))
@@ -105,40 +103,7 @@ def _make_squarePulse_Train(cell, pulseNum=5, freq=120,
     return It
 
 
-def Inoise(dt, mu, sigma, tau, Ipre):
-    """
-    Generate a noisy current drawn from a Gaussian distribution.
-
-    Parameters
-    ----------
-    dt : float
-        time step in ms.
-    mu : float
-        mean of the noisy current.
-    sigma : float
-        standard deviation of the Gaussian distribution.
-    tau : float
-        correlation length.
-    Ipre : float
-        current at t-dt, previos time, in nA.
-
-    Returns
-    -------
-    In : np.array
-        Noisy input current.
-
-    """
-    In = (
-        Ipre
-        + (mu - Ipre) * dt / tau
-        + sigma * np.random.randn() * np.sqrt(2 * dt / tau)
-    )
-
-    return In
-
-
-def _make_noisyCurrentPulse(cell, iAmp=7, isigma=0.2, ionset=10, idur=20,
-                            itau=3):
+def _make_noisyCurrentPulse(cell, iAmp=7, isigma=0.2, ionset=10, idur=20, itau=3):
     """
     Noisy Current Pulse - Optogenetic-like stimulation paradigm.
 
@@ -170,8 +135,7 @@ def _make_noisyCurrentPulse(cell, iAmp=7, isigma=0.2, ionset=10, idur=20,
     iend = ionset + idur
     idxStart = int(round(ionset / cell.dt + 1))
     idxEnd = int(round(iend / cell.dt + 1))
-    In[idxStart:idxEnd:1] = iAmp + isigma * \
-        np.random.randn(len(In[idxStart:idxEnd:1]))
+    In[idxStart:idxEnd:1] = iAmp + isigma * np.random.randn(len(In[idxStart:idxEnd:1]))
 
     In = -In
 
@@ -215,8 +179,7 @@ def insert_CF_stimuli(cell, input_idx, input_seg, stimulusType, **kwargs):
         pulseAmp = kwargs["pulseAmp"]  # [nA] amplitude of the square pulses
 
         """Creating the stimulus"""
-        input_array = _make_squarePulse_Train(
-            cell, pulseNum, freq, pulseDur, pulseAmp)
+        input_array = _make_squarePulse_Train(cell, pulseNum, freq, pulseDur, pulseAmp)
 
     if stimulusType == "noisy_current":
         iAmp = kwargs["iAmp"]  # [nA] mean amplitude of the pulse
@@ -231,8 +194,7 @@ def insert_CF_stimuli(cell, input_idx, input_seg, stimulusType, **kwargs):
                 cell, iAmp, isigma, ionset, idur, itau
             )
         else:
-            input_array = _make_noisyCurrentPulse(
-                cell, iAmp, isigma, ionset, idur)
+            input_array = _make_noisyCurrentPulse(cell, iAmp, isigma, ionset, idur)
 
     isyn = neuron.h.Vector(input_array)
 
@@ -294,7 +256,7 @@ def critical_frequency(cell, **kwargs):
         stim_Parameters = {
             "iAmp": kwargs["iAmp"],
             "isigma": 0.3,  # [nA] standard deviation of the noise
-            "ionset": 600 + random.randint(0, 30),
+            "ionset": 600 + random.randint(0, 10),
             "idur": 30,  # [ms] duration of the stimulation
         }
 

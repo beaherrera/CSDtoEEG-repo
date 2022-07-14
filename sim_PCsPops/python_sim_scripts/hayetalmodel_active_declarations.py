@@ -24,7 +24,7 @@ def biophys_active():
 
     Parameters
     ----------
-    **kwargs : dict
+    None.
 
     Returns
     -------
@@ -34,7 +34,7 @@ def biophys_active():
     # loading mechanisms
     model_pth = join("cell_models", "HayModel")
     pth = join(model_pth, "mod")
-    if not hasattr(h, "Ca_LVAst"):  # mod_folder in neuron.nrn_dll_loaded:
+    if not hasattr(h, "Ca_LVAst"):
         if "win32" in sys.platform:
             h.nrn_load_dll(pth + "/nrnmech.dll")
         else:
@@ -92,8 +92,7 @@ def biophys_active():
         sec.gImbar_Im = 0.0000675
         sec.g_pas = 0.0000589
 
-    h.distribute_channels("apic", "gIhbar_Ih", 2, -
-                          0.8696, 3.6161, 0.0, 2.087, 0.0002)
+    h.distribute_channels("apic", "gIhbar_Ih", 2, -0.8696, 3.6161, 0.0, 2.087, 0.0002)
     h.distribute_channels(
         "apic", "gCa_LVAstbar_Ca_LVAst", 3, 1.0, 0.010, 685.0, 885.0, 0.0187
     )
@@ -119,7 +118,7 @@ def active_declarations(cell):
 
     Parameters
     ----------
-    **kwargs : dict
+    cell : LFPy.Cell Obj 
 
 
     Returns

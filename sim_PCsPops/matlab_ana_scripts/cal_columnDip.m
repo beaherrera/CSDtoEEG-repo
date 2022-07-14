@@ -1,4 +1,5 @@
-% calculate dipolar moment in the column coord system
+%% calculate dipolar moment in the column coord system
+% Author: Beatriz Herrera
 
 clear
 clc

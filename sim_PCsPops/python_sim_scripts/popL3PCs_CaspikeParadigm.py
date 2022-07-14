@@ -70,6 +70,7 @@ class Population:
         # self-object
         data = np.load("cellsPops_L3PCs.npz")
         self.cellPositions = data["cellPositions_L3"]
+        self.cellRotations_z = self.drawRandCellRotations()
 
     def run(self):
         """Execute the proper simulation and collect simulation results."""
@@ -195,6 +196,20 @@ class Population:
 
         return cell
 
+    def drawRandCellRotations(self):
+        """
+        draw random cell rotations around z-axis for all cells in the population.
+
+        Returns
+        -------
+        ndarray
+            rotation angles in radians.
+
+        """
+        cellRotations_z = np.random.rand(self.POPULATION_SIZE) * np.pi * 2
+
+        return cellRotations_z
+
     def cellsim(self, cellindex):
         """
         Run cell and LFP simulation procedure.
@@ -218,6 +233,8 @@ class Population:
             y=self.cellPositions[cellindex, 1],
             z=self.cellPositions[cellindex, 2],
         )
+        # rotate cell around z-axis
+        cell.set_rotation(z=self.cellRotations_z[cellindex])
 
         # loading package with stimulus
         neuron.h.load_file("custom_codes.hoc")
@@ -425,9 +442,7 @@ if __name__ == "__main__":
     }
 
     data_folder = join(
-        "CSDtoEEG_paper_sim",
-        "sim_L3PCs",
-        stimulusType["stimulus_subtype"],
+        "CSDtoEEG_paper_sim", "sim_L3PCs", stimulusType["stimulus_subtype"],
     )
 
     if not os.path.isdir(data_folder):

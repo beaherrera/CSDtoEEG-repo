@@ -1,20 +1,21 @@
-%% Fig 2 D-F
+%% Fig 2 D,E-bottom,F-bottom
+% Author: Beatriz Herrera
 
 clear
 clc
 
 %% Folder Paths
 
-pathData = 'L5_simData_10ms'; % name of the folder where simulated data is
-% stored (see folder for all simulation results found on the paper)
+pathData = 'L5_simData_10ms_1'; % name of the folder where the simulated data is
+% stored
 
-pathLeadFieldIN = []; % path to point-sources lead field matrices (data
-% too large to include on GitHub repo)
+pathLeadFieldIN = []; % path to the lead field matrices for the ground-truth 
+% approach(data too large to include on GitHub repo)
 
 path2CellsData_1 = []; % path to supra-thershold
-% stim sim data (too large to include on GitHub repo)
+% stim simulated data (too large to include on GitHub repo)
 path2CellsData_2 = []; % path to threshold
-% stim sim data (too large to include on GitHub repo)
+% stim simulated data (too large to include on GitHub repo)
 
 path2leadField_V4 = 'leadfields_NMTv2_atlas'; % path to
 % dipolar lead field matrix
@@ -232,7 +233,7 @@ d_CSD_2 = (-(zs_2.*1e-3 - (((h*Ne)/2)+a))'.*mean(diff(zs_2.*1e-3)))'*...
 % baseline correction
 d_CSD_2 = d_CSD_2 - mean(d_CSD_2(1:9));
 
-%% calculate the dipolar moment from the transmembrane currents
+%% calculate the dipolar moment from the transmembrane currents (STC approach)
 
 vertInd_right = 3831;
 vertInd_left = 3786;
@@ -264,7 +265,7 @@ xyzCortNormL = xyzCortNorm; clearvars xyzCortNorm
 dR_In = Rx_right'*Ry_right'*d_2;
 dL_In = Rx_left'*Ry_left'*d_1;
 
-%% downsample d_In for comparison with d_CSD
+%% downsample d_In
 % -- downsampling the LFPs to 1kHz
 if ~brainstorm('status')
     brainstorm nogui
@@ -272,41 +273,6 @@ end
 Fs_new = 1e3; % 1kHz new sampling frequency
 [dRs_In, ~] = process_resample('Compute', dR_In, ts*1e-3, Fs_new);
 [dLs_In, ts_out] = process_resample('Compute', dL_In, ts*1e-3, Fs_new);
-
-%% visual comparison of the dipoles
-
-figure;
-plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
-    xyzCortNormL*dLs_In(:,590:(1e3/Fs_new):699) - mean(xyzCortNormL* ...
-    dLs_In(:,590:(1e3/Fs_new):600)), '-k','LineWidth',1)
-hold on;
-plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
-    d_CSD_1, '-r','LineWidth',1)
-ylabel({'Current Dipole','Moment (nA*m)'})
-xlabel('Time (ms)')
-legend({'In','CSD'},'Box','off')
-box off
-xlim([0 110])
-set(gca,'fontweight','bold','FontSize',12,'LineWidth',2)
-
-MAG(xyzCortNormL*dLs_In(:,590:(1e3/Fs_new):699) - mean(xyzCortNormL* ...
-    dLs_In(:,590:(1e3/Fs_new):600)),d_CSD_1)
-RDM(xyzCortNormL*dLs_In(:,590:(1e3/Fs_new):699) - mean(xyzCortNormL* ...
-    dLs_In(:,590:(1e3/Fs_new):600)),d_CSD_1)
-
-figure;
-plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
-xyzCortNormR*dRs_In(:,590:(1e3/Fs_new):699) - mean(xyzCortNormR* ...
-dRs_In(:,590:(1e3/Fs_new):600)), '-k','LineWidth',1)
-hold on;
-plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
-d_CSD_2, '-r','LineWidth',1)
-ylabel({'Current Dipole','Moment (nA*m)'})
-xlabel('Time (ms)')
-legend({'In','CSD'},'Box','off')
-box off
-xlim([0 110])
-set(gca,'fontweight','bold','FontSize',12,'LineWidth',2)
 
 %% calculate the EEG produced by each dipole
 
@@ -332,7 +298,66 @@ EEG_Dip = KeDip*[dLs_In(:,590:(1e3/Fs_new):699) - ...
 save(fullfile(pathData,'EEG_DipIn.mat'),'EEG_Dip','dR_In', 'dL_In')
 save(fullfile(pathData,'EEG_DipCSD.mat'),'EEG_CSD','d_CSD_1','d_CSD_2')
 
-%% calculate EEG In (point sources per neuron)
+%% comparison of the dipoles in the column's coord system
+
+d_f = eegfilt(d_1, Fs, 0, 100);
+[ds_f, ~] = process_resample('Compute', d_f, ts*1e-3, Fs_new);
+
+d_CSD_xyz = [0 0 1]'*d_CSD_1;
+
+%% --- errors
+MAG(ds_f(:,590:(1e3/Fs_new):699) - ...
+    mean(ds_f(:,590:(1e3/Fs_new):600), 2), d_CSD_xyz)
+RDM(ds_f(:,590:(1e3/Fs_new):699) - ...
+    mean(ds_f(:,590:(1e3/Fs_new):600), 2),d_CSD_xyz)
+
+%%
+figure;
+subplot(3,1,1)
+plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
+    ds_f(1,590:(1e3/Fs_new):699) - ...
+    mean(ds_f(1,590:(1e3/Fs_new):600)), '-k','LineWidth',1)
+hold on;
+plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
+    d_CSD_xyz(1,:), '-r','LineWidth',1)
+ylabel({'x'})
+ylim([min(d_CSD_xyz(3,:))-0.01 max(d_CSD_xyz(3,:))+0.01])
+title('Current Dipole Moment (nA*m)')
+box off
+xlim([0 80])
+set(gca,'fontweight','bold','FontSize',9,'LineWidth',1.5, ...
+    'XTickLabel',[],'XTick',[],'XColor',[1 1 1])
+
+subplot(3,1,2)
+plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
+    ds_f(2,590:(1e3/Fs_new):699) - ...
+    mean(ds_f(2,590:(1e3/Fs_new):600)), '-k','LineWidth',1)
+hold on;
+plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
+    d_CSD_xyz(2,:), '-r','LineWidth',1)
+ylim([min(d_CSD_xyz(3,:))-0.01 max(d_CSD_xyz(3,:))+0.01])
+ylabel({'y'})
+legend({'STC','CSD'},'Box','off')
+box off
+xlim([0 80])
+set(gca,'fontweight','bold','FontSize',9,'LineWidth',1.5, ...
+    'XTickLabel',[],'XTick',[],'XColor',[1 1 1])
+
+subplot(3,1,3)
+plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
+    ds_f(3,590:(1e3/Fs_new):699) - ...
+    mean(ds_f(3,590:(1e3/Fs_new):600)), '-k','LineWidth',1)
+hold on;
+plot((ts_out(:,590:(1e3/Fs_new):699)-0.589).*1e3, ...
+    d_CSD_xyz(3,:), '-r','LineWidth',1)
+ylim([min(d_CSD_xyz(3,:))-0.01 max(d_CSD_xyz(3,:))+0.01])
+ylabel({'z'})
+xlabel('Time (ms)')
+box off
+xlim([0 80])
+set(gca,'fontweight','bold','FontSize',9,'LineWidth',1.5)
+
+%% calculate the ground-truth EEG
 
 EEG_In_R = 0;
 EEG_In_L = 0;
@@ -341,7 +366,7 @@ for ii = 0:999
 
     sprintf('neuron %d',ii)
 
-    % load lead field for point sources in neuron 'ii'
+    % load lead field for neuron 'ii'
     load(fullfile(pathLeadFieldIN,'leadField', ...
         ['leadFieldMonBEMVert' num2str(vertInd_right) ...
         'C' num2str(ii) '.mat']));

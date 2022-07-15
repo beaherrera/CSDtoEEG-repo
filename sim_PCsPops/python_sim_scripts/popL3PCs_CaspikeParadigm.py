@@ -21,7 +21,7 @@ from lfpykit import CellGeometry
 from elephant import spike_train_generation
 
 SEED = 12
-# np.random.seed(SEED)
+np.random.seed(SEED)
 
 """ Functions """
 
@@ -293,7 +293,7 @@ class Population:
         )
 
         saveData = {
-            "cell_geoStretched": cell_geo,  # geometry L3 PCs strectched
+            "cell_geo": cell_geo,  # geometry L3 PCs strectched
             # [mV] somatic membrane potatential
             "Vs": np.array(cell.somav),
             # [mV] distal dendrites memberane potential

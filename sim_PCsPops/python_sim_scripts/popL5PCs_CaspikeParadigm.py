@@ -18,9 +18,10 @@ from neuron import h
 import LFPy
 from hayetalmodel_active_declarations import active_declarations
 from lfpykit import CellGeometry
-from elephant import spike_train_generation  # , statistics  # , spectral
+from elephant import spike_train_generation
 
 SEED = 12
+np.random.seed(SEED)
 
 """ Functions """
 

@@ -34,8 +34,8 @@ zs = (a:h:((Ne-1)*h + a))'; % position of the electrodes along z with
 
 %% Compute Dipolar Moment
 disp('Estimating the current dipole moment')
-d_CSDcontra = 1e-6.*(-(zs-median(zs)).*h)'*CSD_contra*(pi*(rc^2)); % mA*m
-d_CSDipsi = 1e-6.*(-(zs-median(zs)).*h)'*CSD_ipsi*(pi*(rc^2)); % mA*m
+d_CSDcontra = 1e-6.*(-(zs-median(zs)).*h)'*CSD_contra*(pi*(rc^2)); % uA*m
+d_CSDipsi = 1e-6.*(-(zs-median(zs)).*h)'*CSD_ipsi*(pi*(rc^2)); % uA*m
 
 % visualize the current dipole moment
 figure;
@@ -43,7 +43,7 @@ plot(d_CSDcontra,'-b'); hold on;
 plot(d_CSDipsi, '-r')
 legend('Contra', 'Ipsi')
 xlabel('Time-Points')
-ylabel('Current Dipole Moment [mA*m]')
+ylabel('Current Dipole Moment [uA*m]')
 
 %% Compute the EEG
 opts.Interpreter = 'tex';

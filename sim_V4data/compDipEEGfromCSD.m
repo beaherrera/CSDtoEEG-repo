@@ -77,9 +77,9 @@ for ii=1:numKe
     varName = fieldnames(Ke);
     Ke = Ke.(varName{1});
     
-    EEG = Ke*de; % mV
+    EEG = Ke*de; % uV
     
-    outMatUnits = {'mA*m', 'mV'};
+    outMatUnits = {'uA*m', 'uV'};
     [namefile, pathfile] = uiputfile('*.mat',['Select folder path to save '...
         'the EEG and dipolar moment matrices and enter file name.']);
     save([pathfile namefile],'de', 'EEG', 'outMatUnits')

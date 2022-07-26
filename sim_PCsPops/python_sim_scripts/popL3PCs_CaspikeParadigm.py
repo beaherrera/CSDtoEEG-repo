@@ -14,7 +14,7 @@ import neo
 import quantities as pq
 import matplotlib.pyplot as plt
 import neuron
-import myfunctions
+import functions
 from neuron import h
 import LFPy
 from lfpykit import CellGeometry
@@ -155,7 +155,7 @@ class Population:
                     neuron.load_mechanisms(mod_folder)
 
             # get the template name
-            model_path = myfunctions.posixpth(
+            model_path = functions.posixpth(
                 join(
                     model_folder,
                     "ActiveModels",
@@ -163,17 +163,17 @@ class Population:
                 )
             )
             f = open(model_path, "r")
-            templatename = myfunctions.get_templatename(f)
+            templatename = functions.get_templatename(f)
             f.close()
             if not hasattr(h, templatename):
                 # Load main cell template
                 h.load_file(1, model_path)
 
             cell_parameters = {
-                "morphology": myfunctions.posixpth(morph_path),
+                "morphology": functions.posixpth(morph_path),
                 "templatefile": model_path,
                 "templatename": templatename,
-                "templateargs": myfunctions.posixpth(morph_path),
+                "templateargs": functions.posixpth(morph_path),
                 "v_init": -86,
                 "passive": False,
                 "dt": self.cellParameters["dt"],  # [ms] Should be a power of 2

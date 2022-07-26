@@ -16,3 +16,4 @@
 ### Description
 - [python_sim_scripts](python_sim_scripts): scripts to run biophysical simulations in Figure 2 of Herrera and Westerberg et al. 2022.
 - [matlab_ana_scripts](matlab_ana_scripts): matlab scripts used to process simulated data and generate Figure 2 C-K.
+    - run [Matlab_ana_scripts.prj](matlab_ana_scripts/Matlab_ana_scripts.prj) to setup the MATLAB path. Please, notice that you would still need to download and install [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction).

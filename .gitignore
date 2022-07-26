@@ -1,5 +1,6 @@
 # List of untracked files to ignore
 sim_PCsPops/python_sim_scripts/CSDtoEEG_paper_sim/
+sim_PCsPops/matlab_ana_scripts/resources/
 
 # Windows default autosave extension
 *.asv

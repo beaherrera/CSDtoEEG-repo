@@ -27,9 +27,15 @@ np.random.seed(SEED)
 
 
 class Population:
-    """Population class."""
+    """
+    L5 Pyramidal Neuron Population class.
 
-    """Copied and adapted to our purposes from LFPy examples: example_mpi.py"""
+    Create a population (unconnected cells) of 'POPULATION_SIZE' L5 PCs
+    described by the Hay et al. 2011 model, consisting of LFPy.Cell objects.
+
+    Based on the prototype cell population in example_mpi.py from LFPy package
+    examples/.
+    """
 
     def __init__(
         self,
@@ -112,10 +118,10 @@ class Population:
             "nsegs_method": "lambda_f",  # method for setting number of segments,
             "lambda_f": 100,  # segments are isopotential at this frequency
             # dt of LFP and NEURON simulation.
-            "dt": self.cellParameters['dt'],
+            "dt": self.cellParameters["dt"],
             "tstart": -250,  # start time, recorders start at t=0
             # stop time, end of the simulation
-            "tstop": self.cellParameters['tstop'],
+            "tstop": self.cellParameters["tstop"],
             "custom_code": [join(model_pth, "morphologies", "custom_codes.hoc")],
             "custom_fun": [active_declarations],  # will execute this function
             "custom_fun_args": [{}],
@@ -163,8 +169,7 @@ class Population:
             "iAmp": self.stimulusType["iAmp"],
         }
         # inserting stimulus
-        cell, synapse, isyn, idx_distDen = critical_frequency(
-            cell, **CFparadigm_params)
+        cell, synapse, isyn, idx_distDen = critical_frequency(cell, **CFparadigm_params)
 
         # create extracellular electrode object
         electrode = LFPy.RecExtElectrode(cell, **self.electrodeParameters)
@@ -172,9 +177,9 @@ class Population:
         # Parameters for the cell.simulate() call,
         # recording membrane- and syn.-currents
         simulationParameters = {
-            'probes': [electrode],
-            'rec_imem': True,  # Record Membrane currents during simulation
-            'rec_vmem': True,  # record membrane voltage
+            "probes": [electrode],
+            "rec_imem": True,  # Record Membrane currents during simulation
+            "rec_vmem": True,  # record membrane voltage
         }
 
         # perform NEURON simulation, results saved as attributes in cell
@@ -196,8 +201,7 @@ class Population:
             cell.somav, units="mV", sampling_rate=(1 / (dt * 1e-3)) * pq.Hz
         )
         signal_dendv = neo.core.AnalogSignal(
-            cell.vmem[616, :], units="mV",
-            sampling_rate=(1 / (dt * 1e-3)) * pq.Hz
+            cell.vmem[616, :], units="mV", sampling_rate=(1 / (dt * 1e-3)) * pq.Hz
         )
 
         soma_spkTimes = spike_train_generation.peak_detection(
@@ -209,38 +213,51 @@ class Population:
         )
 
         saveData = {
-            'cell_geo': cell_geo,  # geometry L5 PCs strectched
+            "cell_geo": cell_geo,  # geometry L5 PCs strectched
             # [mV] somatic membrane potatential
-            'Vs': np.array(cell.somav),
+            "Vs": np.array(cell.somav),
             # [mV] distal dendrites memberane potential
-            'v_mbp': np.array(cell.vmem[616, :]),
+            "v_mbp": np.array(cell.vmem[616, :]),
             # [ms] time of presynaptic spikes Ncells x Nsynp x Ntskp
-            'It': np.array(cell.imem),  # transmembrane currents
-            'soma_spkTimes': soma_spkTimes,  # [s] times of somatic APs
-            'dend_spkTimes': dend_spkTimes,  # [s]
-            'LFP_neuron': electrode.data,  # [mV] lfp produced by the neuron
+            "It": np.array(cell.imem),  # transmembrane currents
+            "soma_spkTimes": soma_spkTimes,  # [s] times of somatic APs
+            "dend_spkTimes": dend_spkTimes,  # [s]
+            "LFP_neuron": electrode.data,  # [mV] lfp produced by the neuron
         }
 
         # mat files
-        io.savemat(join(self.data_folder, 'NeuronsData_r' + str(self.runNumb) +
-                        '_n#' +
-                        str(cellindex) + '.mat'), saveData)
+        io.savemat(
+            join(
+                self.data_folder,
+                "NeuronsData_r" + str(self.runNumb) + "_n#" + str(cellindex) + ".mat",
+            ),
+            saveData,
+        )
 
         # return dict with primary results from simulation
-        return {'LFP': electrode.data,
-                }
+        return {
+            "LFP": electrode.data,
+        }
 
     def save_simData(self):
         """Save simulations data."""
         saveData = {
-            'ze': self.electrodeParameters['z'],  # [um] electrodes position
-            'LFP': self.LFP,                     # [mV] LFP values
+            "ze": self.electrodeParameters["z"],  # [um] electrodes position
+            "LFP": self.LFP,  # [mV] LFP values
         }
 
         # mat files
-        io.savemat(join(self.data_folder, 'SimData_r' + str(self.runNumb) +
-                   '_PS' + str(self.POPULATION_SIZE) + '.mat'),
-                   saveData)
+        io.savemat(
+            join(
+                self.data_folder,
+                "SimData_r"
+                + str(self.runNumb)
+                + "_PS"
+                + str(self.POPULATION_SIZE)
+                + ".mat",
+            ),
+            saveData,
+        )
 
     def plotstuff(self):
         """
@@ -328,7 +345,7 @@ if __name__ == "__main__":
     # Define electrode geometry corresponding to a laminar probe:
     a = 50
     electrode_spacing = 100
-    z = -np.mgrid[a:(17*100+100):electrode_spacing]  # microns
+    z = -np.mgrid[a : (17 * 100 + 100) : electrode_spacing]  # microns
     electrodeParameters = {
         "x": np.zeros(z.size),
         "y": np.zeros(z.size),
@@ -339,14 +356,15 @@ if __name__ == "__main__":
 
     # will draw random cell locations within cylinder constraints:
     populationParameters = {
-        'radius': 1500,   # [um] radius of the cortical column
-        'ztop': -1250,    # [um] upper limit of the neurons position 600
+        "radius": 1500,  # [um] radius of the cortical column
+        "ztop": -1250,  # [um] upper limit of the neurons position 600
         # [um] lower limit of the neurons position 1100
-        'zbottom': -1750
+        "zbottom": -1750,
     }
 
-    data_folder = join("CSDtoEEG_paper_sim", "sim_L5PCs",
-                       stimulusType["stimulus_subtype"])
+    data_folder = join(
+        "CSDtoEEG_paper_sim", "sim_L5PCs", stimulusType["stimulus_subtype"]
+    )
 
     if not os.path.isdir(data_folder):
         try:

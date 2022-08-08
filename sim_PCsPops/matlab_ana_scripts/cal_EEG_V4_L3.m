@@ -1,4 +1,4 @@
-%% Fig 2 C,E-top,F-top
+%% Fig 2 E-top,F-top
 % Author: Beatriz Herrera
 
 clear

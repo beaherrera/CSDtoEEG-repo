@@ -1,4 +1,4 @@
-%% Fig 2 D,E-bottom,F-bottom
+%% Fig 2 E-bottom,F-bottom
 % Author: Beatriz Herrera
 
 clear

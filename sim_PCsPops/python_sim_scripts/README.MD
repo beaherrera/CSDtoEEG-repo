@@ -1,5 +1,7 @@
+# python_sim_scripts
 
-## Run
+Code to reproduce biophysical simulations in Figure 2 of Herrera and Westerberg et al. (2022). 
+
 ### Run simulation 
 0. compile mod mechanisms. 
 1. run simulations:

@@ -311,6 +311,7 @@ class Population:
                     + ".png",
                 )
             )
+            fig.clear()
             plt.close(fig)
 
 
@@ -329,8 +330,6 @@ if __name__ == "__main__":
 
     # the number of cells in the population
     POPULATION_SIZE = 2  # 1000
-
-    num_trials = 1  # number of simulation runs
 
     stimulusType = {
         "stimulus_subtype": "noisy_current",  # CriticalFrequency:
@@ -374,20 +373,18 @@ if __name__ == "__main__":
         else:
             print("Successfully created the directory %s " % data_folder)
 
-    for runNumb in np.arange(1, num_trials + 1):
+    h("forall delete_section()")
 
-        h("forall delete_section()")
-
-        # ############ INITIALIZE POPULATION ##################
-        population = Population(
-            POPULATION_SIZE,
-            cellParameters,
-            populationParameters,
-            electrodeParameters,
-            stimulusType,
-            runNumb,
-            data_folder,
-        )
-        population.run()
-        population.save_simData()
-        population.plotstuff()
+    # ############ INITIALIZE POPULATION ##################
+    population = Population(
+        POPULATION_SIZE,
+        cellParameters,
+        populationParameters,
+        electrodeParameters,
+        stimulusType,
+        1,
+        data_folder,
+    )
+    population.run()
+    population.save_simData()
+    population.plotstuff()

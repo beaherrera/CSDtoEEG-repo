@@ -391,6 +391,7 @@ class Population:
                     + ".png",
                 )
             )
+            fig.clear()
             plt.close(fig)
 
 
@@ -453,20 +454,18 @@ if __name__ == "__main__":
         else:
             print("Successfully created the directory %s " % data_folder)
 
-    for runNumb in np.arange(1, 2):
+    h("forall delete_section()")
 
-        h("forall delete_section()")
-
-        # ############ INITIALIZE POPULATION ##################
-        population = Population(
-            POPULATION_SIZE,
-            cellParameters,
-            populationParameters,
-            electrodeParameters,
-            stimulusType,
-            runNumb,
-            data_folder,
-        )
-        population.run()
-        population.save_simData()
-        population.plotstuff()
+    # ############ INITIALIZE POPULATION ##################
+    population = Population(
+        POPULATION_SIZE,
+        cellParameters,
+        populationParameters,
+        electrodeParameters,
+        stimulusType,
+        1,
+        data_folder,
+    )
+    population.run()
+    population.save_simData()
+    population.plotstuff()

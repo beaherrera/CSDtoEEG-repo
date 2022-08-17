@@ -24,3 +24,6 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 ## Citation
 Herrera, B., Westerberg, J. A., Schall, M. S., Maier, A., Woodman, G. F., Schall, J. D., & Riera, J. J. (2022). Resolving the mesoscopic missing link: Biophysical modeling of EEG from cortical columns in primates. bioRxiv. **doi**: https://doi.org/10.1101/2022.03.16.484595.
+
+## Acknowledgments
+This work was supported by NEI [grant numbers: P30EY008126, R01EY019882, R01EY008890, R01EY027402], the NIH Office of the Director [grant number: S10OD021771], and NSERC [grant number: RGPIN-2022-04592]. J. A. W. was supported by fellowships from NEI [grant numbers: F31EY031293, T32EY007135].

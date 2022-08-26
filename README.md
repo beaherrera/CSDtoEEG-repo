@@ -3,8 +3,8 @@
 Main analysis code for figures in Herrera and Westerberg et al. (2022), *"Resolving the mesoscopic missing link: Biophysical modeling of EEG from cortical columns in primates"*.
 
 ## Description
-- [scr_synthetic_data](scr_synthetic_data): Biophysical simulations performed for Figure 2. 
-- [scr_V4_data](scr_V4_data): Main analysis code for estimating the contribution V4, LIP, 7A and FEF to the N2pc from laminar field recordings.
+- [src_synthetic_data](src_synthetic_data): Biophysical simulations performed for Figure 2. 
+- [src_V4_data](src_V4_data): Main analysis code for estimating the contribution V4, LIP, 7A and FEF to the N2pc from laminar field recordings.
 
 ## Main Dependencies
 - MATLAB (release 2021b, [The MathWorks](https://www.mathworks.com/?s_tid=gn_logo))

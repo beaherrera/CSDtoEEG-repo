@@ -1,5 +1,5 @@
 # matlab_ana_scripts
-matlab scripts used to process simulated data and generate Figure 2 C-K.
+matlab scripts used to process simulated data and create Figure 2 C-K.
 
 ## Description
 ### Scripts

@@ -1,4 +1,4 @@
-# sim_V4data
+# Modeling application to *in vivo* cortical activity
 Main analysis code for estimating the contribution V4, LIP, 7A and FEF to the N2pc from laminar field recordings.
 
 ## Description 

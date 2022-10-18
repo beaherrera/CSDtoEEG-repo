@@ -10,7 +10,7 @@ Main analysis code for figures in Herrera and Westerberg et al. (2022), *"Resolv
 - MATLAB (release 2021b, [The MathWorks](https://www.mathworks.com/?s_tid=gn_logo))
 - NEURON simulator (release 8.0, http://www.neuron.yale.edu/neuron)
 - LFPy 2.2.2 (https://github.com/LFPy/LFPy)
-- [CSDplotter](matlab_ana_scripts/functions/CSDplotter-0.1.1) (https://github.com/espenhgn/CSDplotter)
+- [CSDplotter](src_synthetic_data/matlab_ana_scripts/functions/CSDplotter-0.1.1) (https://github.com/espenhgn/CSDplotter)
 - [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction)
 
 ## License

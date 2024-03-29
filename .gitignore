@@ -1,6 +1,7 @@
+.DS_Store
+
 # List of untracked files to ignore
 src_synthetic_data/python_sim_scripts/CSDtoEEG_paper_sim/
-src_synthetic_data/matlab_ana_scripts/resources/
 
 # Windows default autosave extension
 *.asv
